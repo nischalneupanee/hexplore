@@ -35,6 +35,7 @@ class BleScannerService : Service() {
     private var bluetoothAdapter: BluetoothAdapter? = null
     private var bluetoothLeScanner: BluetoothLeScanner? = null
     private var isScanning = false
+    private var scannerRetryCount = 0
 
     // Thread-safe maps for debouncing and selecting the strongest beacon based on rolling average RSSI
     private val beaconRssiHistory = ConcurrentHashMap<String, ArrayList<Int>>()
@@ -99,6 +100,26 @@ class BleScannerService : Service() {
         override fun onScanFailed(errorCode: Int) {
             super.onScanFailed(errorCode)
             Log.e(TAG, "BLE Scan Failed with error code: $errorCode")
+            
+            isScanning = false
+            BleSignalTracker.setScanningState(false)
+            
+            val errorMsg = when (errorCode) {
+                SCAN_FAILED_ALREADY_STARTED -> "Scan already active"
+                SCAN_FAILED_APPLICATION_REGISTRATION_FAILED -> "Registration failed"
+                SCAN_FAILED_INTERNAL_ERROR -> "Internal hardware error"
+                SCAN_FAILED_FEATURE_UNSUPPORTED -> "BLE scanning unsupported"
+                SCAN_FAILED_OUT_OF_HARDWARE_RESOURCES -> "Out of hardware resources"
+                else -> "Code $errorCode"
+            }
+            updateNotification("Scanner paused ($errorMsg). Retrying...")
+            
+            // Retry scan after 5 seconds
+            handler.postDelayed({
+                Log.d(TAG, "Attempting to restart scan after error...")
+                initBluetooth()
+                startScanning()
+            }, 5000)
         }
     }
 
@@ -228,7 +249,12 @@ class BleScannerService : Service() {
             startForeground(NOTIFICATION_ID, notification)
         }
 
-        startScanning()
+        if (intent?.action == ACTION_REFRESH_SCAN) {
+            Log.d(TAG, "ACTION_REFRESH_SCAN received. Refreshing BLE scan...")
+            forceScanRefresh()
+        } else {
+            startScanning()
+        }
         return START_STICKY
     }
 
@@ -271,6 +297,12 @@ class BleScannerService : Service() {
     private fun startScanning() {
         if (isScanning) return
         
+        if (bluetoothAdapter?.isEnabled == false) {
+            Log.w(TAG, "Cannot start scan: Bluetooth adapter is disabled")
+            updateNotification("Error: Bluetooth is disabled")
+            return
+        }
+        
         // Try to get scanner again in case bluetooth was turned on after service start
         if (bluetoothLeScanner == null) {
             bluetoothLeScanner = bluetoothAdapter?.bluetoothLeScanner
@@ -278,10 +310,21 @@ class BleScannerService : Service() {
 
         val scanner = bluetoothLeScanner
         if (scanner == null) {
-            Log.e(TAG, "Cannot start scan: BluetoothLeScanner is null")
-            updateNotification("Error: Please enable Bluetooth")
+            if (scannerRetryCount < 5) {
+                scannerRetryCount++
+                Log.w(TAG, "BluetoothLeScanner is null. Retrying startScanning in 1000ms (attempt $scannerRetryCount/5)...")
+                handler.postDelayed({
+                    initBluetooth()
+                    startScanning()
+                }, 1000)
+            } else {
+                Log.e(TAG, "Cannot start scan: BluetoothLeScanner remains null after retries")
+                updateNotification("Error: Bluetooth system failed to initialize")
+            }
             return
         }
+
+        scannerRetryCount = 0 // Reset retry count on success
 
         try {
             val settings = ScanSettings.Builder()
@@ -300,6 +343,21 @@ class BleScannerService : Service() {
             Log.e(TAG, "Failed to start BLE Scan", e)
             updateNotification("Failed to start spatial scanning")
         }
+    }
+
+    private fun forceScanRefresh() {
+        Log.d(TAG, "Refreshing BLE Hardware Scan...")
+        stopScanning()
+        // Clear maps to reset signal averages instantly
+        beaconRssiHistory.clear()
+        beaconLastSeen.clear()
+        BleSignalTracker.clearBeacon()
+        
+        // Restart scan after a short delay to let the Bluetooth controller reset
+        handler.postDelayed({
+            initBluetooth()
+            startScanning()
+        }, 300)
     }
 
     @SuppressLint("MissingPermission")
@@ -408,4 +466,8 @@ class BleScannerService : Service() {
     }
 
     private data class IBeaconData(val major: Int, val minor: Int)
+
+    companion object {
+        const val ACTION_REFRESH_SCAN = "com.example.ble.ACTION_REFRESH_SCAN"
+    }
 }

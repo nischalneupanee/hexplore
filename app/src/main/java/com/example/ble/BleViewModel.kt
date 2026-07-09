@@ -65,6 +65,17 @@ class BleViewModel(private val repository: PlaceRepository) : ViewModel() {
         }
     }
 
+    fun refreshScannerService(context: Context) {
+        try {
+            val intent = Intent(context, BleScannerService::class.java).apply {
+                action = BleScannerService.ACTION_REFRESH_SCAN
+            }
+            context.startService(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error refreshing scanner service", e)
+        }
+    }
+
     fun stopScannerService(context: Context) {
         try {
             val intent = Intent(context, BleScannerService::class.java)

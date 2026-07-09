@@ -255,6 +255,22 @@ fun HexAppMainContainer(compassHeadingFlow: MutableStateFlow<Float>) {
         }
     }
 
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner, hasBlePermissions, isScanning) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                if (hasBlePermissions && isScanning) {
+                    android.util.Log.d("MainActivity", "App resumed. Refreshing BLE scanner...")
+                    viewModel.refreshScannerService(context)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     val detectedBeacon by com.example.ble.BleSignalTracker.detectedBeacon.collectAsState()
     val activeRadarPlace = allPlaces.find { it.place.uid == detectedBeacon?.uid }
         ?: currentPlace
