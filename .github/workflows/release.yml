@@ -45,7 +45,7 @@ jobs:
 
       - name: Build Release APK
         env:
-          KEYSTORE_PATH: my-upload-key.jks
+          KEYSTORE_PATH: ${{ github.workspace }}/my-upload-key.jks
           STORE_PASSWORD: temporarypassword
           KEY_PASSWORD: temporarypassword
         run: ./gradlew assembleRelease -Dorg.gradle.java.home=$JAVA_HOME
