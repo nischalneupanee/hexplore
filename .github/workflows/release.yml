@@ -48,7 +48,7 @@ jobs:
           KEYSTORE_PATH: my-upload-key.jks
           STORE_PASSWORD: temporarypassword
           KEY_PASSWORD: temporarypassword
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease -Dorg.gradle.java.home=$JAVA_HOME
 
       - name: Locate Build Artifact
         id: locate_apk
