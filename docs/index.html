@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download HEXPLORE App - Himalaya College of Engineering</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-glow">
+        <div class="glow-1"></div>
+        <div class="glow-2"></div>
+    </div>
+
+    <div class="page-container">
+        <!-- Hero Header Section -->
+        <header class="hero-section">
+            <div class="logo-container">
+                <img src="logo.png" alt="HEXPLORE App Logo" class="app-logo" onerror="this.src='https://raw.githubusercontent.com/nischalneupanee/hexplore/main/app/src/main/res/drawable/logo.png'">
+            </div>
+            
+            <h1 class="app-title">HEXPLORE</h1>
+            <p class="app-subtitle">The official smart companion app for Himalaya College of Engineering (HCOE) Exhibition.</p>
+            
+            <div class="meta-badges">
+                <span class="badge" id="version-badge"><i class="fa-solid fa-code-version"></i> Version: Loading...</span>
+                <span class="badge" id="size-badge"><i class="fa-solid fa-weight-hanging"></i> Size: Loading...</span>
+                <span class="badge" id="date-badge"><i class="fa-solid fa-calendar-day"></i> Released: Loading...</span>
+            </div>
+        </header>
+
+        <!-- Main Content Layout -->
+        <main class="main-layout">
+            <!-- Left Column: Primary Actions -->
+            <section class="action-card">
+                <div class="card-body text-center">
+                    <h2 class="section-title"><i class="fa-solid fa-download"></i> Download Center</h2>
+                    <p class="card-desc">Download and install the official APK directly onto your Android device to start exploring showcases.</p>
+                    
+                    <a href="https://github.com/nischalneupanee/hexplore/releases/latest/download/app-release.apk" id="download-btn" class="download-button">
+                        <span class="btn-icon"><i class="fa-solid fa-circle-down"></i></span>
+                        <span class="btn-text">
+                            <span class="btn-main-text">Download APK</span>
+                            <span class="btn-sub-text" id="btn-version-text">Fetch latest release...</span>
+                        </span>
+                    </a>
+
+                    <!-- Permanent QR Code Link -->
+                    <div class="qr-container">
+                        <p class="qr-text">Scan this QR code to download directly to your mobile device:</p>
+                        <div class="qr-code-wrapper">
+                            <!-- Dynamically generate QR code using a free API matching the production GitHub Pages URL -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://nischalneupanee.github.io/hexplore/&color=ffffff&bgcolor=151922" alt="HEXPLORE Download QR Code" class="qr-code">
+                        </div>
+                        <span class="qr-url">https://nischalneupanee.github.io/hexplore/</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Interactive Details -->
+            <div class="details-column">
+                <!-- App Highlights -->
+                <section class="info-card">
+                    <h3 class="card-title"><i class="fa-solid fa-star"></i> Key Features</h3>
+                    <ul class="features-list">
+                        <li>
+                            <div class="feat-icon"><i class="fa-solid fa-radar"></i></div>
+                            <div class="feat-content">
+                                <h4>Interactive Radar System</h4>
+                                <p>Discover active BLE exhibition beacons in real-time as you navigate Himalaya College of Engineering.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feat-icon"><i class="fa-solid fa-building-columns"></i></div>
+                            <div class="feat-content">
+                                <h4>Showcase & Projects Browser</h4>
+                                <p>Explore structural art models, automated civil siphon spillways, and dynamic student project galleries.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feat-icon"><i class="fa-solid fa-compass"></i></div>
+                            <div class="feat-content">
+                                <h4>Spatial Walking Navigation</h4>
+                                <p>Easily find exhibition landmarks like Block B, Registration Desks, and Robo Soccer Arenas.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="feat-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+                            <div class="feat-content">
+                                <h4>Fully Offline Capable</h4>
+                                <p>Preloaded dynamic SQLite catalog with seamless on-launch database updates. No continuous internet needed.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </section>
+
+                <!-- Installation Instructions -->
+                <section class="info-card">
+                    <h3 class="card-title"><i class="fa-solid fa-gears"></i> Installation Guide</h3>
+                    <ol class="setup-steps">
+                        <li>
+                            <div class="step-num">1</div>
+                            <div class="step-content">
+                                <h5>Download APK</h5>
+                                <p>Tap the download button above or scan the QR code using your Android phone.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="step-num">2</div>
+                            <div class="step-content">
+                                <h5>Allow Unknown Sources</h5>
+                                <p>If prompted by your browser, navigate to <strong>Settings -> Security</strong> and enable <strong>"Install Unknown Apps"</strong> or allow installation from this source.</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="step-num">3</div>
+                            <div class="step-content">
+                                <h5>Install and Launch</h5>
+                                <p>Open the downloaded <code>.apk</code> file from your notification bar or downloads folder and tap <strong>Install</strong>.</p>
+                            </div>
+                        </li>
+                    </ol>
+                </section>
+
+                <!-- Release Notes / Timeline -->
+                <section class="info-card">
+                    <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Release Notes</h3>
+                    <div id="release-notes-container" class="release-notes">
+                        <div class="release-note-item">
+                            <h4 id="release-tag">Latest Version</h4>
+                            <p class="release-note-date" id="release-date">Fetching details...</p>
+                            <div class="release-note-body" id="release-body">
+                                Loading dynamic release description and changelog directly from GitHub...
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2026 Himalaya College of Engineering. All rights reserved.</p>
+            <p class="footer-links">
+                <a href="https://github.com/nischalneupanee/hexplore" target="_blank" rel="noopener noreferrer">
+                    <i class="fa-brands fa-github"></i> GitHub Repository
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Custom JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>

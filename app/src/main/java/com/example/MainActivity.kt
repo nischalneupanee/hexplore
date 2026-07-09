@@ -1570,14 +1570,15 @@ fun TabShowcasesContent(place: PlaceWithDetails, isWithinProximity: Boolean) {
                                         color = Color.White
                                     )
 
-                                    Spacer(modifier = Modifier.height(4.dp))
-
-                                    Text(
-                                        text = showcase.desc,
-                                        fontSize = 13.sp,
-                                        color = WhiteTranslucent,
-                                        lineHeight = 18.sp
-                                    )
+                                    if (showcase.desc.isNotEmpty()) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            text = showcase.desc,
+                                            fontSize = 13.sp,
+                                            color = WhiteTranslucent,
+                                            lineHeight = 18.sp
+                                        )
+                                    }
 
                                     // High-contrast smooth expansion detailed specifications sub-panel
                                     androidx.compose.animation.AnimatedVisibility(

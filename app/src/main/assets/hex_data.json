@@ -3,7 +3,7 @@
     "HEX_BEACON_01": {
       "location_name": "Main Gate",
       "short_description": "The main entry checkpoint of Himalaya College of Engineering (HCOE) for HEX 2083.",
-      "image_asset": "img_main_gate",
+      "image_asset": "img_maingate_new",
       "major": 1,
       "minor": 1,
       "image_url": "",
@@ -15,7 +15,7 @@
           {
             "title": "Straight Ahead: Registration Desk",
             "desc": "Walking straight ahead from the main entry checkpoint will lead you directly to the main Registration Desk.",
-            "images": ["img_registration_desk"]
+            "images": ["img_registration_new"]
           },
           {
             "title": "Right Side: College Lobby",
@@ -34,13 +34,18 @@
     "HEX_BEACON_02": {
       "location_name": "Registration Desk",
       "short_description": "The central hub for all visitors. Get your exhibition pass, dynamic layout codes, and guidelines here.",
-      "image_asset": "img_registration_desk",
+      "image_asset": "img_registration_new",
       "major": 1,
       "minor": 2,
       "image_url": "",
       "detailed_info": {
         "about": "The central hub for all visitors. Managed by department clubs, this is where visitors register and download the HEXplore companion app.",
         "showcases": [
+          {
+            "title": "Comparative Study of Framed RCC & Steel Structure Models",
+            "desc": "",
+            "image_url": ""
+          },
           {
             "title": "Smart Siphon Spillway for Automated Water Level Management & Flood Mitigation",
             "desc": "An automated spillway design model by the Civil Department Club featuring real-time water level adjustments and smart flood mitigation mechanics.",
@@ -55,6 +60,11 @@
             "title": "Sustainable Rainwater Management for Resilient Cities",
             "desc": "A green infrastructure layout showing sustainable urban rainwater harvesting and permeable drainage models.",
             "image_url": "img_rainwater_management"
+          },
+          {
+            "title": "Stability Analysis of a Typical Hill Slope in Nepal and Mitigation Measures",
+            "desc": "",
+            "image_url": ""
           }
         ],
         "games": [],
@@ -67,7 +77,12 @@
           {
             "title": "Straight Ahead: Basketball Court & Architecture Zone",
             "desc": "Continuing straight past the registration desk brings you directly to the outdoor Basketball Court and the Architecture Zone exhibition spaces.",
-            "images": ["img_basketball_court", "img_architect_zone"]
+            "images": ["img_basketballcourt_new", "img_architecturezone_new"]
+          },
+          {
+            "title": "To the Left: Civil Project Showcase",
+            "desc": "Walking left from the registration desk brings you directly to the Civil Engineering structural showcases.",
+            "images": ["img_civil_showcase"]
           }
         ]
       },
@@ -81,7 +96,7 @@
     "HEX_BEACON_03": {
       "location_name": "Basketball Court",
       "short_description": "The central outdoor arena hosting active technological innovations and clubs from HECC, IT, and HRC.",
-      "image_asset": "img_basketball_court",
+      "image_asset": "img_basketballcourt_new",
       "major": 1,
       "minor": 3,
       "image_url": "",
@@ -95,6 +110,12 @@
             "category": "Right Side (HECC Club)"
           },
           {
+            "title": "Deep Learning System for Detecting AI-Generated Videos",
+            "desc": "",
+            "image_url": "",
+            "category": "Right Side (HECC Club)"
+          },
+          {
             "title": "AI-Assisted Real-Time Two-Player Quiz",
             "desc": "HECC Club: An interactive competitive game framework powered by AI to evaluate and serve custom engineering trivia live.",
             "image_url": "img_quiz_game",
@@ -104,6 +125,12 @@
             "title": "Portable Aero Drum Using FSR Technology",
             "desc": "HECC Club: Digital music synthesis system utilizing Force Sensitive Resistors (FSR) to enable air-drumming with sub-10ms response latency.",
             "image_url": "img_aero_drum",
+            "category": "Right Side (HECC Club)"
+          },
+          {
+            "title": "AI Voice Assistant Using ESP32",
+            "desc": "",
+            "image_url": "",
             "category": "Right Side (HECC Club)"
           },
           {
@@ -131,6 +158,18 @@
             "category": "Middle Zone (IT Club)"
           },
           {
+            "title": "Quadruped Robot Model",
+            "desc": "",
+            "image_url": "",
+            "category": "Middle Zone (IT Club)"
+          },
+          {
+            "title": "IoT-Based Hand Gesture-Controlled Vehicle",
+            "desc": "",
+            "image_url": "",
+            "category": "Middle Zone (IT Club)"
+          },
+          {
             "title": "Remote-Controlled Balloon Popping Robot",
             "desc": "HRC Club: Custom-engineered robot chassis designed for balloon-popping arena matches under high torque controls.",
             "image_url": "img_balloon_popping_robot",
@@ -152,6 +191,18 @@
             "title": "Computer Vision-Based Gesture-Controlled Robotic Arm",
             "desc": "HRC Club: Interactive industrial-grade arm prototype mimicking human hand gestures captured in real-time camera feeds.",
             "image_url": "img_gesture_robotic_arm",
+            "category": "Left Side (HRC Club)"
+          },
+          {
+            "title": "Smart Voice-to-Text Digital Device Using ESP32",
+            "desc": "",
+            "image_url": "",
+            "category": "Left Side (HRC Club)"
+          },
+          {
+            "title": "Vision-Based Driver Alert & Braking System for Four-Wheel Vehicles",
+            "desc": "",
+            "image_url": "",
             "category": "Left Side (HRC Club)"
           }
         ],
@@ -181,7 +232,7 @@
           {
             "title": "Adjacent Side: Architecture Zone",
             "desc": "The Architecture Zone structural showcase models are located right along the side perimeter of the Basketball Court area.",
-            "images": ["img_architect_zone"]
+            "images": ["img_architecturezone_new"]
           },
           {
             "title": "Opposite Side: Robo Soccer Arena",
@@ -200,7 +251,7 @@
     "HEX_BEACON_04": {
       "location_name": "Architect Zone",
       "short_description": "Step into structural art. Explore advanced design scales, miniature physical blueprints, and creative structural setups.",
-      "image_asset": "img_architect_zone",
+      "image_asset": "img_architecturezone_new",
       "major": 1,
       "minor": 4,
       "image_url": "",
@@ -208,14 +259,59 @@
         "about": "Step into structural art. Explore advanced design scales, miniature physical blueprints, and creative structural setups curated by the Department of Architecture.",
         "showcases": [
           {
-            "title": "Architectural Design of a Residential Building",
-            "desc": "Comprehensive modern residential building design featuring eco-sustainable ventilation and sunlight tracking parameters.",
-            "image_url": "img_architect_residential"
+            "title": "commercial",
+            "desc": "",
+            "image_url": "img_commercial"
           },
           {
-            "title": "Architectural Design of a School Building",
-            "desc": "A structural master plan of a smart educational campus focused on accessibility and community learning open zones.",
-            "image_url": "img_architect_school"
+            "title": "commercialcomplex",
+            "desc": "",
+            "image_url": "img_commercialcomplex"
+          },
+          {
+            "title": "event venue",
+            "desc": "",
+            "image_url": "img_event_venue"
+          },
+          {
+            "title": "heritage",
+            "desc": "",
+            "image_url": "img_heritage"
+          },
+          {
+            "title": "heritage1",
+            "desc": "",
+            "image_url": "img_heritage1"
+          },
+          {
+            "title": "heritage2",
+            "desc": "",
+            "image_url": "img_heritage2"
+          },
+          {
+            "title": "heritage3",
+            "desc": "",
+            "image_url": "img_heritage3"
+          },
+          {
+            "title": "neighbourhood",
+            "desc": "",
+            "image_url": "img_neighbourhood"
+          },
+          {
+            "title": "pavilion",
+            "desc": "",
+            "image_url": "img_pavilion"
+          },
+          {
+            "title": "residence",
+            "desc": "",
+            "image_url": "img_residence"
+          },
+          {
+            "title": "school",
+            "desc": "",
+            "image_url": "img_school"
           }
         ],
         "games": [
@@ -239,7 +335,7 @@
           {
             "title": "Adjacent Side: Basketball Court & Tech Club Zone",
             "desc": "The central Basketball Court housing the active IT, Robotics, and Electronics club stalls is located directly to the side of the Architecture Zone.",
-            "images": ["img_basketball_court"]
+            "images": ["img_basketballcourt_new"]
           }
         ]
       },

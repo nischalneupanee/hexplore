@@ -1,0 +1,85 @@
+name: Build and Release APK
+
+on:
+  push:
+    tags:
+      - 'v*' # Trigger on version tags (e.g. v1.0.0, v1.2)
+  workflow_dispatch: # Enable manual run from GitHub Actions tab
+
+permissions:
+  contents: write # Needed to create releases and upload assets
+
+jobs:
+  build:
+    name: Build and Upload Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Generate Dynamic Signing Keystore
+        run: |
+          if [ ! -f "my-upload-key.jks" ]; then
+            echo "Generating self-signed upload keystore..."
+            keytool -genkey -v -keystore my-upload-key.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Hexplore, OU=Engineering, O=HCOE, L=Kathmandu, S=Bagmati, C=NP" -storepass temporarypassword -keypass temporarypassword
+          fi
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build Release APK
+        env:
+          KEYSTORE_PATH: my-upload-key.jks
+          STORE_PASSWORD: temporarypassword
+          KEY_PASSWORD: temporarypassword
+        run: ./gradlew assembleRelease
+
+      - name: Locate Build Artifact
+        id: locate_apk
+        run: |
+          APK_PATH=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          if [ -z "$APK_PATH" ]; then
+            echo "Error: Release APK not found!"
+            exit 1
+          fi
+          echo "Found APK at: $APK_PATH"
+          echo "apk_path=$APK_PATH" >> $GITHUB_OUTPUT
+          
+          # Compute APK size for release notes info
+          APK_SIZE_BYTES=$(stat -c%s "$APK_PATH")
+          APK_SIZE_MB=$(echo "scale=2; $APK_SIZE_BYTES / 1048576" | bc)
+          echo "apk_size=$APK_SIZE_MB MB" >> $GITHUB_OUTPUT
+
+      - name: Upload APK to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.locate_apk.outputs.apk_path }}
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'latest' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Latest Release' }}
+          body: |
+            Automated release build of HEXPLORE app.
+            
+            - **Filename:** `app-release.apk`
+            - **Size:** `${{ steps.locate_apk.outputs.apk_size }}`
+            - **Built on:** `${{ github.event.head_commit.timestamp || 'Manual Dispatch' }}`
+          draft: false
+          prerelease: false
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
