@@ -76,6 +76,28 @@ class BleViewModel(private val repository: PlaceRepository) : ViewModel() {
         }
     }
 
+    fun enableBackgroundScanning(context: Context) {
+        try {
+            val intent = Intent(context, BleScannerService::class.java).apply {
+                action = BleScannerService.ACTION_BACKGROUND_MODE
+            }
+            context.startService(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error enabling background scanning", e)
+        }
+    }
+
+    fun enableForegroundScanning(context: Context) {
+        try {
+            val intent = Intent(context, BleScannerService::class.java).apply {
+                action = BleScannerService.ACTION_FOREGROUND_MODE
+            }
+            context.startService(intent)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error enabling foreground scanning", e)
+        }
+    }
+
     fun stopScannerService(context: Context) {
         try {
             val intent = Intent(context, BleScannerService::class.java)

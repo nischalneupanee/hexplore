@@ -142,7 +142,7 @@ fun RevolutionizedRadar(
         neighbors.forEach { (targetUid, nodeCompassAngle) ->
             allPlaces.find { it.place.uid == targetUid }?.let { targetPlace ->
                 if (targetPlace.place.uid != centerPlace.place.uid) {
-                    val angleDeg = nodeCompassAngle - 90f
+                    val angleDeg = nodeCompassAngle - heading - 90f
                     val angleRad = Math.toRadians(angleDeg.toDouble()).toFloat()
                     val radiusDp = 108f // orbit radius of the nodes
                     val offsetX = radiusDp * kotlin.math.cos(angleRad)
@@ -529,7 +529,7 @@ fun LocationImage(
     val finalResId = if (resId != 0) resId else com.example.R.drawable.img_zone_default
 
     Image(
-        painter = rememberAsyncImagePainter(finalResId),
+        painter = painterResource(id = finalResId),
         contentDescription = contentDescription,
         modifier = modifier,
         contentScale = ContentScale.Crop

@@ -147,8 +147,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    fun registerCompassListener() {
+        sensorManager.unregisterListener(this)
         rotationSensor?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
         } ?: run {
@@ -157,9 +157,18 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
+    fun unregisterCompassListener() {
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Managed dynamically in Compose HexAppMainContainer DisposableEffect to save battery
+    }
+
     override fun onPause() {
         super.onPause()
-        sensorManager.unregisterListener(this)
+        unregisterCompassListener()
     }
 
     override fun onSensorChanged(event: SensorEvent) {
@@ -173,7 +182,13 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             if (azimuthInDegrees < 0) {
                 azimuthInDegrees += 360f
             }
-            _compassHeading.value = azimuthInDegrees
+            
+            // Apply low-pass filter to smooth rotation vector azimuth
+            val current = _compassHeading.value
+            var diff = azimuthInDegrees - current
+            while (diff < -180) diff += 360
+            while (diff > 180) diff -= 360
+            _compassHeading.value = (current + diff * 0.15f + 360f) % 360f
         } else if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
             gravity = event.values.clone()
             hasGravity = true
@@ -255,19 +270,45 @@ fun HexAppMainContainer(compassHeadingFlow: MutableStateFlow<Float>) {
         }
     }
 
+    val activity = context as? MainActivity
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
-    androidx.compose.runtime.DisposableEffect(lifecycleOwner, hasBlePermissions, isScanning) {
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner, selectedTab, hasBlePermissions, isScanning) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                if (hasBlePermissions && isScanning) {
-                    android.util.Log.d("MainActivity", "App resumed. Refreshing BLE scanner...")
-                    viewModel.refreshScannerService(context)
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
+                    if (selectedTab == 0) {
+                        activity?.registerCompassListener()
+                    }
+                    if (hasBlePermissions && isScanning) {
+                        viewModel.enableForegroundScanning(context)
+                    }
                 }
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> {
+                    activity?.unregisterCompassListener()
+                    if (hasBlePermissions && isScanning) {
+                        viewModel.enableBackgroundScanning(context)
+                    }
+                }
+                else -> {}
             }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
+        
+        // Immediate registration on start if already resumed
+        if (lifecycleOwner.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) {
+            if (selectedTab == 0) {
+                activity?.registerCompassListener()
+            } else {
+                activity?.unregisterCompassListener()
+            }
+            if (hasBlePermissions && isScanning) {
+                viewModel.enableForegroundScanning(context)
+            }
+        }
+
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+            activity?.unregisterCompassListener()
         }
     }
 

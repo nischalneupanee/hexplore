@@ -36,6 +36,7 @@ class BleScannerService : Service() {
     private var bluetoothLeScanner: BluetoothLeScanner? = null
     private var isScanning = false
     private var scannerRetryCount = 0
+    private var scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
 
     // Thread-safe maps for debouncing and selecting the strongest beacon based on rolling average RSSI
     private val beaconRssiHistory = ConcurrentHashMap<String, ArrayList<Int>>()
@@ -249,11 +250,34 @@ class BleScannerService : Service() {
             startForeground(NOTIFICATION_ID, notification)
         }
 
-        if (intent?.action == ACTION_REFRESH_SCAN) {
-            Log.d(TAG, "ACTION_REFRESH_SCAN received. Refreshing BLE scan...")
-            forceScanRefresh()
-        } else {
-            startScanning()
+        when (intent?.action) {
+            ACTION_REFRESH_SCAN -> {
+                Log.d(TAG, "ACTION_REFRESH_SCAN received. Refreshing BLE scan...")
+                forceScanRefresh()
+            }
+            ACTION_BACKGROUND_MODE -> {
+                Log.d(TAG, "ACTION_BACKGROUND_MODE received. Switching to low power scan...")
+                if (scanMode != ScanSettings.SCAN_MODE_LOW_POWER) {
+                    scanMode = ScanSettings.SCAN_MODE_LOW_POWER
+                    if (isScanning) {
+                        stopScanning()
+                        startScanning()
+                    }
+                }
+            }
+            ACTION_FOREGROUND_MODE -> {
+                Log.d(TAG, "ACTION_FOREGROUND_MODE received. Switching to low latency scan...")
+                if (scanMode != ScanSettings.SCAN_MODE_LOW_LATENCY) {
+                    scanMode = ScanSettings.SCAN_MODE_LOW_LATENCY
+                    if (isScanning) {
+                        stopScanning()
+                        startScanning()
+                    }
+                }
+            }
+            else -> {
+                startScanning()
+            }
         }
         return START_STICKY
     }
@@ -328,7 +352,7 @@ class BleScannerService : Service() {
 
         try {
             val settings = ScanSettings.Builder()
-                .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+                .setScanMode(scanMode)
                 .build()
 
             scanner.startScan(null, settings, scanCallback)
@@ -435,32 +459,33 @@ class BleScannerService : Service() {
                     return IBeaconData(major, minor)
                 }
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Error parsing manufacturer specific data", e)
-        }
-
-        val scanRecord = result.scanRecord?.bytes ?: return null
-        if (scanRecord.size < 30) return null
-        
-        var startIdx = 0
-        while (startIdx <= scanRecord.size - 25) {
-            // Check for Apple Company code (0x4C, 0x00 - Little Endian) and iBeacon prefix (0x0215)
-            if (scanRecord[startIdx] == 0x4C.toByte() && 
-                scanRecord[startIdx + 1] == 0x00.toByte() && 
-                scanRecord[startIdx + 2] == 0x02.toByte() && 
-                scanRecord[startIdx + 3] == 0x15.toByte()) {
-                
-                // Major is at startIdx + 20 and startIdx + 21
-                val major = ((scanRecord[startIdx + 20].toInt() and 0xFF) shl 8) or 
-                            (scanRecord[startIdx + 21].toInt() and 0xFF)
-                
-                // Minor is at startIdx + 22 and startIdx + 23
-                val minor = ((scanRecord[startIdx + 22].toInt() and 0xFF) shl 8) or 
-                            (scanRecord[startIdx + 23].toInt() and 0xFF)
-                            
-                return IBeaconData(major, minor)
+            
+            // Raw fallback parsing
+            val scanRecord = result.scanRecord?.bytes ?: return null
+            if (scanRecord.size < 30) return null
+            
+            var startIdx = 0
+            while (startIdx <= scanRecord.size - 25) {
+                // Check for Apple Company code (0x4C, 0x00 - Little Endian) and iBeacon prefix (0x0215)
+                if (scanRecord[startIdx] == 0x4C.toByte() && 
+                    scanRecord[startIdx + 1] == 0x00.toByte() && 
+                    scanRecord[startIdx + 2] == 0x02.toByte() && 
+                    scanRecord[startIdx + 3] == 0x15.toByte()) {
+                    
+                    // Major is at startIdx + 20 and startIdx + 21
+                    val major = ((scanRecord[startIdx + 20].toInt() and 0xFF) shl 8) or 
+                                (scanRecord[startIdx + 21].toInt() and 0xFF)
+                    
+                    // Minor is at startIdx + 22 and startIdx + 23
+                    val minor = ((scanRecord[startIdx + 22].toInt() and 0xFF) shl 8) or 
+                                (scanRecord[startIdx + 23].toInt() and 0xFF)
+                                
+                    return IBeaconData(major, minor)
+                }
+                startIdx++
             }
-            startIdx++
+        } catch (e: Exception) {
+            Log.e(TAG, "Error parsing manufacturer specific data or raw advertisement bytes", e)
         }
         return null
     }
@@ -469,5 +494,7 @@ class BleScannerService : Service() {
 
     companion object {
         const val ACTION_REFRESH_SCAN = "com.example.ble.ACTION_REFRESH_SCAN"
+        const val ACTION_BACKGROUND_MODE = "com.example.ble.ACTION_BACKGROUND_MODE"
+        const val ACTION_FOREGROUND_MODE = "com.example.ble.ACTION_FOREGROUND_MODE"
     }
 }

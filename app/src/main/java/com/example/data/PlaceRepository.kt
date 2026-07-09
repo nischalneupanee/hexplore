@@ -131,6 +131,8 @@ class PlaceRepository(
     }
 
     suspend fun markPlaceAsVisited(uid: String) {
-        placeDao.markPlaceAsVisited(uid)
+        withContext(Dispatchers.IO) {
+            placeDao.markPlaceAsVisited(uid)
+        }
     }
 }
