@@ -10,7 +10,19 @@
       "detailed_info": {
         "about": "The main entry checkpoint of Himalaya College of Engineering (HCOE) for HEX 2083. Welcome to the exhibition!",
         "showcases": [],
-        "games": []
+        "games": [],
+        "about_navigation": [
+          {
+            "title": "Straight Ahead: Registration Desk",
+            "desc": "Walking straight ahead from the main entry checkpoint will lead you directly to the main Registration Desk.",
+            "images": ["img_registration_desk"]
+          },
+          {
+            "title": "Right Side: College Lobby",
+            "desc": "There is the lobby of the Himalaya College of Engineering just on the right side of the registration desk.",
+            "images": ["img_college_lobby"]
+          }
+        ]
       },
       "navigation": {
         "in_front": null,

@@ -25,19 +25,6 @@ class BleViewModel(private val repository: PlaceRepository) : ViewModel() {
     private val _currentPlace = MutableStateFlow<PlaceWithDetails?>(null)
     val currentPlace: StateFlow<PlaceWithDetails?> = _currentPlace.asStateFlow()
 
-    // Global tracking of completed event challenges/quests
-    private val _completedQuests = MutableStateFlow<Set<String>>(emptySet())
-    val completedQuests: StateFlow<Set<String>> = _completedQuests.asStateFlow()
-
-    fun toggleQuestCompletion(questTitle: String) {
-        val current = _completedQuests.value
-        if (current.contains(questTitle)) {
-            _completedQuests.value = current - questTitle
-        } else {
-            _completedQuests.value = current + questTitle
-        }
-    }
-
     // Tracking list of all places for tags
     val allPlaces: StateFlow<List<PlaceWithDetails>> = repository.allPlaces
         .stateIn(

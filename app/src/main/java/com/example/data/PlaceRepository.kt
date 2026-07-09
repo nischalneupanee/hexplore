@@ -30,14 +30,10 @@ class PlaceRepository(
     suspend fun populateDatabaseIfEmpty() {
         withContext(Dispatchers.IO) {
             try {
-                // Check if database already has places
-                val existingPlaces = placeDao.getAllPlacesWithDetails().first()
-                if (existingPlaces.isNotEmpty()) {
-                    Log.d(TAG, "Database already populated with ${existingPlaces.size} places")
-                    return@withContext
-                }
+                Log.d(TAG, "Reseeding database from hex_data.json...")
 
-                Log.d(TAG, "Database is empty. Starting prepopulation from assets...")
+                // Always wipe and reseed so JSON changes are reflected on every launch
+                placeDao.deleteAllPlaces()
 
                 // Read hex_data.json
                 val jsonString = context.assets.open("hex_data.json").bufferedReader().use { it.readText() }

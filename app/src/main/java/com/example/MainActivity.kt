@@ -49,13 +49,11 @@ import androidx.compose.material.icons.filled.HelpOutline
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Radar
 import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Gamepad
 import androidx.compose.material.icons.filled.School
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.VideogameAsset
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -106,6 +104,7 @@ import com.example.ui.RevolutionizedRadar
 import com.example.ui.LocationImage
 import com.example.ui.getIconForLocation
 import com.example.ui.CoilImageWithFallback
+import com.example.ui.InfoScreen
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.layout.ContentScale
 import com.squareup.moshi.Moshi
@@ -215,7 +214,6 @@ fun HexAppMainContainer(compassHeadingFlow: MutableStateFlow<Float>) {
     val currentPlace by viewModel.currentPlace.collectAsState()
     val allPlaces by viewModel.allPlaces.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
-    val completedQuests by viewModel.completedQuests.collectAsState()
     val compassHeading by compassHeadingFlow.collectAsState()
 
     var selectedTab by remember { mutableStateOf(0) }
@@ -296,8 +294,8 @@ fun HexAppMainContainer(compassHeadingFlow: MutableStateFlow<Float>) {
                         onClick = { selectedTab = 1 }
                     )
                     BottomNavItem(
-                        icon = Icons.Default.Star,
-                        label = "Me",
+                        icon = Icons.Default.Info,
+                        label = "Info",
                         selected = selectedTab == 2,
                         onClick = { selectedTab = 2 }
                     )
@@ -380,10 +378,7 @@ fun HexAppMainContainer(compassHeadingFlow: MutableStateFlow<Float>) {
                                 detectedBeacon = detectedBeacon,
                                 onPlaceClick = { viewModel.selectPlaceManually(it) }
                             )
-                            2 -> MeScreen(
-                                viewModel = viewModel,
-                                allPlaces = allPlaces
-                            )
+                            2 -> InfoScreen()
                         }
                     }
                 }
@@ -407,8 +402,6 @@ fun HexAppMainContainer(compassHeadingFlow: MutableStateFlow<Float>) {
                                 Level3DeepDivePanel(
                                     place = place,
                                     isWithinProximity = isWithinProximity,
-                                    completedQuests = completedQuests,
-                                    onToggleQuest = { viewModel.toggleQuestCompletion(it) },
                                     onBack = { isLevel3Expanded = false },
                                     onDismiss = { viewModel.clearCurrentPlace() }
                                 )
@@ -891,265 +884,7 @@ fun ZonesScreen(
     }
 }
 
-@Composable
-fun MeScreen(
-    viewModel: BleViewModel,
-    allPlaces: List<PlaceWithDetails>
-) {
-    val completedQuests by viewModel.completedQuests.collectAsState()
-    
-    val totalGamesCount = remember(allPlaces) {
-        allPlaces.sumOf { it.games.size }
-    }
-    
-    val xp = completedQuests.size * 100
-    
-    val rank = when {
-        completedQuests.size >= 5 -> "Exhibition Grandmaster"
-        completedQuests.size >= 3 -> "HCOE Explorer Pro"
-        completedQuests.size >= 1 -> "Cyber Scout"
-        else -> "Exhibition Guest"
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        item {
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        item {
-            GlassmorphicCard(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(24.dp),
-                borderColor = ElectricCyan.copy(alpha = 0.25f),
-                backgroundColor = DeepNavy.copy(alpha = 0.65f)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .background(ElectricCyan.copy(alpha = 0.15f), CircleShape)
-                            .border(2.dp, ElectricCyan, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Group,
-                            contentDescription = "Avatar",
-                            tint = ElectricCyan,
-                            modifier = Modifier.size(40.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Text(
-                        text = "EXHIBITION EXPLORER",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = ElectricCyan,
-                        letterSpacing = 2.sp
-                    )
-                    Text(
-                        text = "HCOE Smart Guest",
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color.White
-                    )
-                    Text(
-                        text = rank,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color(0xFFFFD700)
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-                    HorizontalDivider(color = Color.White.copy(alpha = 0.08f), thickness = 1.dp)
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "TOTAL XP",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = WhiteTranslucent
-                            )
-                            Text(
-                                text = "$xp XP",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = ElectricCyan
-                            )
-                        }
-
-                        Spacer(
-                            modifier = Modifier
-                                .width(1.dp)
-                                .height(32.dp)
-                                .background(Color.White.copy(alpha = 0.08f))
-                        )
-
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "QUESTS DONE",
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = WhiteTranslucent
-                            )
-                            Text(
-                                text = "${completedQuests.size} / $totalGamesCount",
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        item {
-            Text(
-                text = "YOUR ACCOMPLISHMENTS",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                color = ElectricCyan,
-                letterSpacing = 1.5.sp,
-                modifier = Modifier.padding(start = 4.dp)
-            )
-        }
-
-        if (completedQuests.isEmpty()) {
-            item {
-                GlassmorphicCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    borderColor = Color.White.copy(alpha = 0.05f),
-                    backgroundColor = TranslucentSurface.copy(alpha = 0.25f)
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.HelpOutline,
-                            contentDescription = null,
-                            tint = WhiteTranslucent,
-                            modifier = Modifier.size(36.dp)
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = "No quests completed yet",
-                            color = Color.White,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Explore the exhibition stalls in person to activate live arcade games and mark them as completed!",
-                            color = WhiteTranslucent,
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                            lineHeight = 18.sp
-                        )
-                    }
-                }
-            }
-        } else {
-            items(completedQuests.toList()) { questTitle ->
-                GlassmorphicCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    borderColor = Color(0xFF2DCE89).copy(alpha = 0.3f),
-                    backgroundColor = Color(0xFF0F261D).copy(alpha = 0.45f)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CheckCircle,
-                                contentDescription = "Completed badge",
-                                tint = Color(0xFF2DCE89),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Column {
-                                Text(
-                                    text = questTitle,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = "Exhibition Challenge Cleared",
-                                    fontSize = 11.sp,
-                                    color = Color(0xFF2DCE89)
-                                )
-                            }
-                        }
-                        
-                        Text(
-                            text = "+100 XP",
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Black,
-                            color = Color(0xFF2DCE89)
-                        )
-                    }
-                }
-            }
-            
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(
-                    onClick = {
-                        completedQuests.forEach { viewModel.toggleQuestCompletion(it) }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red.copy(alpha = 0.12f)),
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(44.dp)
-                        .border(1.dp, Color.Red.copy(alpha = 0.4f), RoundedCornerShape(16.dp))
-                ) {
-                    Text(
-                        text = "RESET ALL ACHIEVEMENTS",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Black,
-                        color = Color.Red
-                    )
-                }
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(48.dp))
-        }
-    }
-}
+// MeScreen removed — replaced by InfoScreen
 
 // ==========================================
 // LEVEL 2: PROXIMITY DISCOVERY BOTTOM SHEET
@@ -1286,8 +1021,6 @@ fun Level2ProximityDiscovery(
 fun Level3DeepDivePanel(
     place: PlaceWithDetails,
     isWithinProximity: Boolean,
-    completedQuests: Set<String>,
-    onToggleQuest: (String) -> Unit,
     onBack: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -1417,9 +1150,7 @@ fun Level3DeepDivePanel(
                     1 -> TabShowcasesContent(place = place, isWithinProximity = isWithinProximity)
                     2 -> TabGamesContent(
                         place = place,
-                        isWithinProximity = isWithinProximity,
-                        completedQuests = completedQuests,
-                        onToggleQuest = onToggleQuest
+                        isWithinProximity = isWithinProximity
                     )
                 }
             }
@@ -1570,17 +1301,16 @@ fun TabAboutContent(place: PlaceWithDetails) {
                                             val imgResId = remember(imgResName) {
                                                 context.resources.getIdentifier(imgResName, "drawable", context.packageName)
                                             }
-                                            if (imgResId != 0) {
-                                                Image(
-                                                    painter = painterResource(id = imgResId),
-                                                    contentDescription = pathway.title,
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .height(140.dp)
-                                                        .clip(RoundedCornerShape(16.dp)),
-                                                    contentScale = ContentScale.Crop
-                                                )
-                                            }
+                                            val resolvedId = if (imgResId != 0) imgResId else com.example.R.drawable.img_zone_default
+                                            Image(
+                                                painter = painterResource(id = resolvedId),
+                                                contentDescription = pathway.title,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(140.dp)
+                                                    .clip(RoundedCornerShape(16.dp)),
+                                                contentScale = ContentScale.Crop
+                                            )
                                         } else {
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -1950,9 +1680,7 @@ fun TabShowcasesContent(place: PlaceWithDetails, isWithinProximity: Boolean) {
 @Composable
 fun TabGamesContent(
     place: PlaceWithDetails,
-    isWithinProximity: Boolean,
-    completedQuests: Set<String>,
-    onToggleQuest: (String) -> Unit
+    isWithinProximity: Boolean
 ) {
     if (!isWithinProximity) {
         LockStateBanner()
@@ -1990,7 +1718,7 @@ fun TabGamesContent(
         ) {
             item {
                 Text(
-                    text = "COMPLETE LIVE QUESTS & CHALLENGES",
+                    text = "LIVE GAMES & CHALLENGES",
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
                     color = ElectricCyan,
@@ -2000,13 +1728,12 @@ fun TabGamesContent(
             }
 
             items(place.games) { game ->
-                val isCompleted = completedQuests.contains(game.title)
 
                 GlassmorphicCard(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
-                    borderColor = if (isCompleted) Color(0xFF2DCE89).copy(alpha = 0.4f) else ElectricCyan.copy(alpha = 0.2f),
-                    backgroundColor = if (isCompleted) Color(0xFF0F261D).copy(alpha = 0.5f) else TranslucentSurface.copy(alpha = 0.45f)
+                    borderColor = ElectricCyan.copy(alpha = 0.2f),
+                    backgroundColor = TranslucentSurface.copy(alpha = 0.45f)
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         // High-end Mini-Game Banner
@@ -2028,58 +1755,22 @@ fun TabGamesContent(
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = Icons.Default.VideogameAsset,
-                                        contentDescription = null,
-                                        tint = if (isCompleted) Color(0xFF2DCE89) else ElectricCyan,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        text = "LIVE STALL MINI-GAME",
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (isCompleted) Color(0xFF2DCE89) else ElectricCyan,
-                                        letterSpacing = 1.sp
-                                    )
-                                }
-
-                                if (isCompleted) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier
-                                            .background(Color(0xFF2DCE89).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.CheckCircle,
-                                            contentDescription = null,
-                                            tint = Color(0xFF2DCE89),
-                                            modifier = Modifier.size(12.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(4.dp))
-                                        Text(
-                                            text = "COMPLETED",
-                                            fontSize = 8.sp,
-                                            color = Color(0xFF2DCE89),
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                } else {
-                                    Text(
-                                        text = "100 XP",
-                                        fontSize = 9.sp,
-                                        color = ElectricCyan,
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier
-                                            .background(ElectricCyan.copy(alpha = 0.15f), RoundedCornerShape(4.dp))
-                                            .padding(horizontal = 6.dp, vertical = 2.dp)
-                                    )
-                                }
+                                Icon(
+                                    imageVector = Icons.Default.VideogameAsset,
+                                    contentDescription = null,
+                                    tint = ElectricCyan,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "LIVE STALL MINI-GAME",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ElectricCyan,
+                                    letterSpacing = 1.sp
+                                )
                             }
 
                             Spacer(modifier = Modifier.height(10.dp))
@@ -2100,39 +1791,7 @@ fun TabGamesContent(
                                 lineHeight = 18.sp
                             )
 
-                            Spacer(modifier = Modifier.height(14.dp))
-
-                            Button(
-                                onClick = { onToggleQuest(game.title) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isCompleted) Color(0xFF2DCE89).copy(alpha = 0.15f) else ElectricCyan.copy(alpha = 0.12f)
-                                ),
-                                shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(36.dp)
-                                    .border(
-                                        1.dp,
-                                        if (isCompleted) Color(0xFF2DCE89).copy(alpha = 0.5f) else ElectricCyan.copy(alpha = 0.3f),
-                                        RoundedCornerShape(10.dp)
-                                    )
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(
-                                        imageVector = if (isCompleted) Icons.Default.CheckCircle else Icons.Default.PlayArrow,
-                                        contentDescription = null,
-                                        tint = if (isCompleted) Color(0xFF2DCE89) else ElectricCyan,
-                                        modifier = Modifier.size(14.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = if (isCompleted) "RESET CHALLENGE" else "MARK QUEST AS COMPLETED",
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Black,
-                                        color = if (isCompleted) Color(0xFF2DCE89) else ElectricCyan
-                                    )
-                                }
-                            }
+                            Spacer(modifier = Modifier.height(4.dp))
                         }
                     }
                 }
