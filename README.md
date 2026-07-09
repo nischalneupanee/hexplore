@@ -91,7 +91,7 @@ Before building, ensure you have the following installed:
 - **Arduino IDE 2.x** (for flashing ESP32 beacons)
   - Install `esp32` board package via Boards Manager
 
-If you are setting up on Windows, use the dedicated guide in [docs/windows/README.md](docs/windows/README.md) and the helper scripts in [scripts/windows/hexplore.ps1](scripts/windows/hexplore.ps1).
+If you are setting up on Windows, start with [scripts/windows/README.md](scripts/windows/README.md). That folder explains which script to run for setup, build, install, and device checks.
 
 ---
 
@@ -106,7 +106,7 @@ cd hexplore
 
 ### 2. Configure Environment
 
-- **Windows:** run [scripts/windows/setup.bat](scripts/windows/setup.bat) or [scripts/windows/hexplore.ps1](scripts/windows/hexplore.ps1)
+- **Windows:** follow [scripts/windows/README.md](scripts/windows/README.md)
 - **macOS/Linux:** copy `.env.example` to `.env` if the file does not already exist
 
 ### 3. Connect Your Android Device
@@ -122,7 +122,7 @@ adb devices
 
 ### 4. Build & Install
 
-- **Windows:** run [scripts/windows/build.bat](scripts/windows/build.bat) to compile the debug APK, or [scripts/windows/install.bat](scripts/windows/install.bat) to build and install to the connected device
+- **Windows:** follow [scripts/windows/README.md](scripts/windows/README.md)
 - **Other platforms:** run `./gradlew assembleDebug` or `./gradlew installDebug`
 
 The generated APK is written to `app/build/outputs/apk/debug/app-debug.apk`.
@@ -189,6 +189,7 @@ hexplore/
 ├── esp32_beacon.ino                        # ESP32 Arduino beacon firmware
 ├── scripts/
 │   └── windows/
+│       ├── README.md                 # Windows setup, build, and USB install guide
 │       ├── hexplore.ps1                  # Windows helper for setup/build/install/device checks
 │       ├── setup.bat                     # One-click setup wrapper
 │       ├── build.bat                     # Build debug APK wrapper

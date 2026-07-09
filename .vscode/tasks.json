@@ -1,0 +1,64 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "HEXplore: Setup Windows Environment",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/windows/hexplore.ps1",
+        "setup"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "HEXplore: Build Debug APK",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/windows/hexplore.ps1",
+        "build"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "HEXplore: Install Debug APK over USB",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/windows/hexplore.ps1",
+        "install"
+      ],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "HEXplore: List USB Devices",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/scripts/windows/hexplore.ps1",
+        "devices"
+      ],
+      "problemMatcher": []
+    }
+  ]
+}
